@@ -1,0 +1,42 @@
+#!/bin/bash
+GEOMETRY="50x9+1020+580"
+
+_appl_fzf() {
+    /home/akuma/.fzf/bin/fzf +m --tiebreak=length,end --layout=reverse --color=prompt:7,pointer:7,spinner:2,info:8,hl:2,hl+:2,marker:0 --margin=1,2 --prompt='∴ ' $@
+
+}
+
+_appl_run() {
+    terminology --geometry=$GEOMETRY -e "$0" "$1" &
+}
+
+case "$1" in
+    # for some weird reason we need to sleep when we run pdetach
+    # to prevent it from exiting prematurely
+    _run)
+        f=$(compgen -c | sort | grep -v '[:!.{}]\|\[\[\|]]\|\[' | _appl_fzf)
+        if [ $? = 0 ]; then
+            pdetach "$f"
+            sleep 1
+            echo "pewpew I shoot chu! :S "
+        fi
+        ;;
+    _window)
+        window_ids=$(xprop -root | grep '^_NET_CLIENT_LIST(WINDOW)' | cut -d ' ' -f5-)
+        IFS=', ' read -ra IDS <<< "$window_ids"
+        choice=$(
+            for wid in "${IDS[@]}"; do
+                name=$(xwininfo -id "$wid" -wm | grep '^xwininfo:'  | cut -d ' ' -f 5-)
+                name="${name:1:-1}"
+                [[ $name != 'appl' ]] && echo "$wid	$name"
+            done | _appl_fzf --with-nth 2..
+        )
+        if [ $? = 0 ]; then
+            xdotool windowactivate $(echo "$choice" | cut -d ' ' -f1)
+        fi
+        ;;
+    run)    _appl_run _run    ;;
+    window) _appl_run _window ;;
+    *)      echo 'usage: appl run'
+            echo '       appl window'
+    esac

@@ -1,0 +1,25 @@
+#!/bin/bash
+ibase=10; obase=10              # set up defaults
+usage() {
+  echo "Usage: $(basename $0) -i base -o base value" 1>&2
+  echo "  where base can be 2, 8, 10 or 16." 1>&2
+  exit 1
+}
+while getopts "i:o:" value ; do
+  case "$value" in
+    i) ibase=$OPTARG
+       (( ibase == 2 || ibase == 8 || ibase == 10 ||
+          ibase == 16 )) || usage
+       ;;
+    o) obase=$OPTARG
+       (( obase == 2 || obase == 8 || obase == 10 ||
+          obase == 16 )) || usage
+       ;;
+    *) usage ;;
+  esac
+done
+shift $(( OPTIND - 1 ))
+
+echo Converting $1 from base-$ibase to base-$obase\:
+echo "obase=$obase; ibase=$ibase; $1" | bc
+exit 0

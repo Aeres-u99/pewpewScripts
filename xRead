@@ -1,0 +1,5 @@
+#!/bin/sh
+hr >> ~/tracksandlogs/currentlyReading
+echo "[`pwd`] [`date`]: $1" >> ~/tracksandlogs/currentlyReading
+hr >> ~/tracksandlogs/currentlyReading
+nohup zathura "$1" &

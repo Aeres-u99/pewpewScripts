@@ -1,0 +1,41 @@
+#!/usr/bin/python3
+import os
+
+def caller():
+    numbers=['0','1','2','3','4','5','6','7']
+    print(" -- Simple Script to add tasks interactively --")
+    print("Enter Project: ")
+    project = input("(project name)~ ")
+    pchoice = input("Subprojects[y/n]?: ")
+
+    if pchoice == 'y' or pchoice == 'Y':
+        entry = ""
+        while True:
+            print("Enter '--' to quit.")
+            entry = input("Subproject: ")
+            if entry == "--":
+                break
+            project_temp = project +'.'+entry
+            print(project_temp)
+            priorities = ["Vh","OMG","DOIT","M","Meh","L","Pfffffft","Nope"]
+            print("Enter Priority: ",priorities)
+            priority = input("(priority)~ ")
+            if priority in numbers:
+                priority = priorities[int(priority)]
+            description = input("Description: ")
+            choice = input("Enter y for entering more info: ")
+            if choice == 'y' or choice == 'Y' :
+                print("Enter tags: ")
+                tags = input("(tags, with +/-)~ ")
+                print("Enter due date: ")
+                due = input("(format acceptabl to taskwarrior)~ ")
+                command = "task add priority:\""+priority+"\" project:\""+project_temp+"\" "+tags+" due:"+due+" \""+description+"\""
+                os.system(command)
+            else:
+                command = "task add priority:\""+priority+"\" project:\""+project_temp+"\""
+                os.system(command)
+    return "Done"
+
+while True:
+    command = "task "+caller()
+    print(command)

@@ -1,0 +1,6 @@
+docker kill alpine
+
+cat ~/DockerWork/work_export.tar | docker import - alpine:latest
+docker run -itd alpine:latest /bin/bash
+docker start alpine
+docker exec -it alpine bash
