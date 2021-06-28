@@ -1,0 +1,43 @@
+#!/bin/sh
+# Ansi color code variables
+red="\e[0;91m"
+blue="\e[0;94m"
+expand_bg="\e[K"
+blue_bg="\e[0;104m${expand_bg}"
+red_bg="\e[0;101m${expand_bg}"
+green_bg="\e[0;102m${expand_bg}"
+green="\e[0;92m"
+white="\e[0;97m"
+bold="\e[1m"
+uline="\e[4m"
+reset="\e[0m"
+FILENAME="$1"
+FILEPATH=$(readlink -f "$1")
+TRACKINGFILE=~/.tracksandlogs/readinglist
+OUTPUT=$(cat $TRACKINGFILE 2> /dev/null | grep "$1")
+grep_return_code=$?
+if [ -z "$1" ]
+    then
+    BOOKS=$(cat ~/.tracksandlogs/readinglist| fzf --prompt "Books" --height 40% --reverse)
+    if [ "$BOOKS" ]
+    then
+        >&2 echo -e "${green}[Message]${reset} :: Opening $BOOKS"
+        nohup zathura "$BOOKS" 2>&1 > /dev/null &
+        exit
+    else
+        echo -e "${red}[Error]${reset} :: No file was Selected."
+        exit
+    fi
+fi
+
+
+if [ "$OUTPUT" ] && [ "$1" ]
+then
+    echo -e "${green}[Message]${reset} :: Found in track"
+    nohup zathura "$1" 2>&1 > /dev/null &
+else
+    >&2 echo -e "${green}[Message]${reset} :: Adding file to tracker"
+    echo "$FILEPATH" >> ~/.tracksandlogs/readinglist
+    nohup zathura "$1" 2>&1 > /dev/null &
+fi
+

@@ -1,0 +1,9 @@
+#!/bin/env bash
+clear
+figlet "Setting up the screen"
+xset s off
+xrandr --output HDMI-1 --auto --right-of eDP-1
+xset -dpms
+pkill compton
+
+

@@ -1,0 +1,23 @@
+#!/usr/bin/python3
+import os 
+import img2pdf
+import shutil #maybe use it to move pdf
+from progress.bar import Bar
+subfolders = os.listdir() #listr all the subdirectories inside which the images lie
+print("=> Finding sudirectories of: ",os.getcwd())
+print("----"*3)
+print(subfolders)
+bar = Bar('[Conversion Progress]',max=len(subfolders))
+for i in subfolders:
+    nameofpdf=i+".pdf"
+    print("==> Entering",nameofpdf)
+    os.chdir(i) #enter into the subdirectory
+    with open(nameofpdf,"wb") as f:
+        print("\n =>> Converting ",nameofpdf)
+        f.write(img2pdf.convert([i for i in sorted(os.listdir('.'))if i.endswith(".jpg") or i.endswith(".png")]))
+        print("\n ==> Moving ",nameofpdf)
+        shutil.move(nameofpdf,"..")
+        os.chdir("..")
+        bar.next()
+
+
