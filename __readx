@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/env bash
 # Ansi color code variables
 red="\e[0;91m"
 blue="\e[0;94m"
@@ -14,15 +14,20 @@ reset="\e[0m"
 FILENAME="$1"
 FILEPATH=$(readlink -f "$1")
 TRACKINGFILE=~/.tracksandlogs/readinglist
+PROGRAM=zathura
+PROMPT="[Books]> "
+#
+# https://github.com/moosotc/llpp/blob/master/help.ml
+#
 OUTPUT=$(cat $TRACKINGFILE 2> /dev/null | grep "$1")
 grep_return_code=$?
 if [ -z "$1" ]
     then
-    BOOKS=$(cat ~/.tracksandlogs/readinglist| fzf --prompt "Books" --height 40% --reverse)
+    BOOKS=$(cat ~/.tracksandlogs/readinglist| fzf --prompt "$PROMPT" --height 40% --reverse)
     if [ "$BOOKS" ]
     then
         >&2 echo -e "${green}[Message]${reset} :: Opening $BOOKS"
-        nohup zathura "$BOOKS" 2>&1 > /dev/null &
+        nohup $PROGRAM "$BOOKS" 2>&1 > /dev/null &
         exit
     else
         echo -e "${red}[Error]${reset} :: No file was Selected."
@@ -34,10 +39,10 @@ fi
 if [ "$OUTPUT" ] && [ "$1" ]
 then
     echo -e "${green}[Message]${reset} :: Found in track"
-    nohup zathura "$1" 2>&1 > /dev/null &
+    nohup $PROGRAM "$1" 2>&1 > /dev/null &
 else
     >&2 echo -e "${green}[Message]${reset} :: Adding file to tracker"
     echo "$FILEPATH" >> ~/.tracksandlogs/readinglist
-    nohup zathura "$1" 2>&1 > /dev/null &
+    nohup $PROGRAM "$1" 2>&1 > /dev/null &
 fi
 
